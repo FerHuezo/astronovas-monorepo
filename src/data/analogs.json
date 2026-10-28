@@ -1,0 +1,67 @@
+[
+  {
+    "id": "atacama",
+    "name": "Desierto de Atacama",
+    "region": "Chile",
+    "target": "Marte",
+    "lat": -24.5,
+    "lng": -69.25,
+    "type": "Desierto hiperárido",
+    "description": "El lugar no polar más seco de la Tierra. Sus suelos con percloratos y su baja actividad microbiana lo hacen un banco de pruebas para rovers y búsqueda de vida en Marte.",
+    "similarity": 88,
+    "metrics": { "uvIndex": 16, "annualRainfallMm": 15, "meanTempC": 17, "soil": "Sales, percloratos y yeso" },
+    "palette": ["#7c2d12", "#c2410c", "#fdba74"]
+  },
+  {
+    "id": "lanzarote",
+    "name": "Tubos de lava de Lanzarote",
+    "region": "Islas Canarias, España",
+    "target": "Luna",
+    "lat": 29.05,
+    "lng": -13.43,
+    "type": "Tubos de lava basálticos",
+    "description": "Cavidades volcánicas análogas a los tubos de lava lunares, candidatos a refugio contra la radiación para futuras bases.",
+    "similarity": 74,
+    "metrics": { "uvIndex": 9, "annualRainfallMm": 140, "meanTempC": 21, "soil": "Basalto y escoria volcánica" },
+    "palette": ["#1c1917", "#44403c", "#f59e0b"]
+  },
+  {
+    "id": "mcmurdo",
+    "name": "Valles Secos de McMurdo",
+    "region": "Antártida",
+    "target": "Marte",
+    "lat": -77.5,
+    "lng": 162.5,
+    "type": "Desierto polar frío",
+    "description": "Valles libres de hielo con permafrost y vientos katabáticos; el análogo más cercano al clima frío y seco de Marte.",
+    "similarity": 81,
+    "metrics": { "uvIndex": 12, "annualRainfallMm": 50, "meanTempC": -20, "soil": "Permafrost y arena criogénica" },
+    "palette": ["#0c4a6e", "#38bdf8", "#e0f2fe"]
+  },
+  {
+    "id": "lonar",
+    "name": "Cráter Lonar",
+    "region": "Maharashtra, India",
+    "target": "Luna",
+    "lat": 19.98,
+    "lng": 76.51,
+    "type": "Cráter de impacto en basalto",
+    "description": "Uno de los pocos cráteres de impacto sobre roca basáltica, similar a los mares lunares. Útil para estudiar vidrio de impacto y regolito.",
+    "similarity": 69,
+    "metrics": { "uvIndex": 11, "annualRainfallMm": 800, "meanTempC": 26, "soil": "Basalto Decán y maskelinita" },
+    "palette": ["#052e16", "#15803d", "#a3e635"]
+  },
+  {
+    "id": "mojave",
+    "name": "Desierto de Mojave",
+    "region": "California, EE. UU.",
+    "target": "Marte",
+    "lat": 35.0,
+    "lng": -116.5,
+    "type": "Desierto con campos de lava",
+    "description": "Sede de las antenas de espacio profundo de Goldstone y de numerosas pruebas de rovers de la NASA.",
+    "similarity": 72,
+    "metrics": { "uvIndex": 10, "annualRainfallMm": 130, "meanTempC": 19, "soil": "Arenas aluviales y basalto" },
+    "palette": ["#78350f", "#d97706", "#fde68a"]
+  }
+]
