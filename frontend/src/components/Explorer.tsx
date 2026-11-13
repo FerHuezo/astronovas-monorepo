@@ -1,10 +1,13 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollToPlugin } from "gsap/ScrollToPlugin";
-import type { Analog } from "@/lib/types";
+import { DEFAULT_WEIGHTS, rankAnalogs, rankSites, type Match } from "@/lib/similarity";
+import type { Analog, Body, RefSite, Weights } from "@/lib/types";
+import Dock from "./Dock";
+import LinkOverlay from "./LinkOverlay";
 import Story from "./Story";
 
 gsap.registerPlugin(ScrollToPlugin);
@@ -15,8 +18,17 @@ const Globe = dynamic(() => import("./Globe"), {
   loading: () => <div className="grid h-full place-items-center text-white/40">Cargando globo…</div>,
 });
 
-export default function Explorer({ analogs }: { analogs: Analog[] }) {
+/** Sitio de la Luna o Marte elegido por el usuario; vale mientras el análogo terrestre asociado siga activo. */
+interface Pin {
+  body: Body;
+  siteId: string;
+  earthId: string;
+}
+
+export default function Explorer({ analogs, sites }: { analogs: Analog[]; sites: RefSite[] }) {
   const [activeId, setActiveId] = useState<string | null>(null);
+  const [weights, setWeights] = useState<Weights>(DEFAULT_WEIGHTS);
+  const [pin, setPin] = useState<Pin | null>(null);
   const scrollingRef = useRef(false);
   const headerRef = useRef<HTMLElement>(null);
 
@@ -39,6 +51,30 @@ export default function Explorer({ analogs }: { analogs: Analog[] }) {
     if (!scrollingRef.current) setActiveId(id);
   }, []);
 
+  // Luna/Marte -> Tierra: el análogo terrestre más parecido al sitio elegido se activa.
+  const handleSitePick = useCallback(
+    (site: RefSite) => {
+      const best = rankAnalogs(site, analogs, weights)[0];
+      if (!best) return;
+      setPin({ body: site.body, siteId: site.id, earthId: best.item.id });
+      handleGlobeSelect(best.item.id);
+    },
+    [analogs, weights, handleGlobeSelect],
+  );
+
+  // Tierra -> Luna/Marte: el gemelo más parecido de cada cuerpo, salvo el sitio fijado por el usuario.
+  const matches = useMemo(() => {
+    const out: Record<Body, Match<RefSite> | null> = { moon: null, mars: null };
+    const earth = analogs.find((a) => a.id === activeId);
+    if (!earth) return out;
+    for (const body of ["moon", "mars"] as const) {
+      const ranking = rankSites(earth, sites, body, weights);
+      const pinned = pin && pin.earthId === earth.id && pin.body === body;
+      out[body] = (pinned && ranking.find((r) => r.item.id === pin.siteId)) || ranking[0] || null;
+    }
+    return out;
+  }, [analogs, sites, activeId, weights, pin]);
+
   // Scroll de regreso al encabezado: se desactiva el análogo y el globo vuelve a su vista inicial.
   useEffect(() => {
     const header = headerRef.current;
@@ -54,7 +90,7 @@ export default function Explorer({ analogs }: { analogs: Analog[] }) {
   }, []);
 
   return (
-    <main className="md:grid md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+    <main className="flex flex-col md:grid md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
       <div className="order-2 md:order-1">
         <header ref={headerRef} className="flex min-h-screen flex-col justify-center px-6 md:px-12">
           <p className="font-mono text-xs uppercase tracking-widest text-sky-300">AstroNovas</p>
@@ -65,11 +101,19 @@ export default function Explorer({ analogs }: { analogs: Analog[] }) {
           </p>
           <p className="mt-10 text-sm text-white/40">↓ Desplázate</p>
         </header>
-        <Story analogs={analogs} onActivate={handleScrollActivate} />
+        <Story analogs={analogs} sites={sites} weights={weights} onActivate={handleScrollActivate} />
       </div>
 
       <div className="sticky top-0 z-0 order-1 h-[50vh] md:order-2 md:h-screen">
         <Globe analogs={analogs} activeId={activeId} onSelect={handleGlobeSelect} />
+        <LinkOverlay activeId={activeId} />
+        <Dock
+          sites={sites}
+          matches={matches}
+          weights={weights}
+          onWeights={setWeights}
+          onPick={handleSitePick}
+        />
       </div>
     </main>
   );
