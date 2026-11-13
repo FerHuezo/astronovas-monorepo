@@ -3,16 +3,19 @@
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import type { Analog } from "@/lib/types";
+import { rankSites } from "@/lib/similarity";
+import type { Analog, RefSite, Weights } from "@/lib/types";
 
 gsap.registerPlugin(ScrollTrigger);
 
 interface Props {
   analogs: Analog[];
+  sites: RefSite[];
+  weights: Weights;
   onActivate: (id: string) => void;
 }
 
-export default function Story({ analogs, onActivate }: Props) {
+export default function Story({ analogs, sites, weights, onActivate }: Props) {
   const rootRef = useRef<HTMLDivElement>(null);
   const onActivateRef = useRef(onActivate);
   useEffect(() => {
@@ -90,7 +93,7 @@ export default function Story({ analogs, onActivate }: Props) {
             <p className="mt-5 leading-relaxed text-white/80">{a.description}</p>
 
             <div className="mt-8 grid grid-cols-2 gap-3">
-              <Card label="Similitud" value={`${a.similarity}%`} accent />
+              <Card label={`Similitud con ${a.target}`} value={`${best(a, sites, weights).score}%`} note={best(a, sites, weights).item.name} accent />
               <Card label="Índice UV medio" value={a.metrics.uvIndex.toFixed(1)} />
               <Card label="Lluvia anual" value={`${a.metrics.annualRainfallMm} mm`} />
               <Card label="Temp. media" value={`${a.metrics.meanTempC} °C`} />
@@ -111,11 +114,27 @@ export default function Story({ analogs, onActivate }: Props) {
   );
 }
 
-function Card({ label, value, accent }: { label: string; value: string; accent?: boolean }) {
+/** Sitio de la Luna o Marte (según el objetivo del análogo) que mejor coincide, con su puntaje. */
+function best(a: Analog, sites: RefSite[], weights: Weights) {
+  return rankSites(a, sites, a.target === "Luna" ? "moon" : "mars", weights)[0];
+}
+
+function Card({
+  label,
+  value,
+  note,
+  accent,
+}: {
+  label: string;
+  value: string;
+  note?: string;
+  accent?: boolean;
+}) {
   return (
     <div data-card className="rounded-xl border border-white/10 bg-white/5 p-4 backdrop-blur">
       <p className="text-xs uppercase tracking-wider text-white/50">{label}</p>
       <p className={`mt-1 text-2xl font-semibold ${accent ? "text-orange-300" : ""}`}>{value}</p>
+      {note && <p className="mt-0.5 truncate text-xs text-white/50">{note}</p>}
     </div>
   );
 }
