@@ -32,6 +32,9 @@ Variables de entorno: copia `frontend/.env.example` a `frontend/.env.local` y `b
 | `npm run build` | Build de producción del frontend |
 | `npm run lint` | ESLint del frontend |
 | `npm run db:seed` | Regenera `backend/supabase/seed.sql` (consulta NASA POWER) |
+| `npm run db:extract` | Reextrae las evaluaciones desde los PDF a `backend/data/analog-assessments.json` (requiere `pdftotext`) |
+| `npm run db:seed:assessments` | Regenera `backend/supabase/seed.assessments.sql` desde `backend/data/` |
+| `npm run db:bundle:update` | SQL para actualizar un proyecto que ya tiene las migraciones anteriores |
 | `npm run test:db` | Prueba migraciones, seed y seguridad (RLS) sin Docker |
 
 Para añadir una dependencia a una carpeta: `npm install <paquete> -w frontend` (o `-w backend`).

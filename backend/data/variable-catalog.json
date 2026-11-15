@@ -1,0 +1,99 @@
+{
+  "_comment": "Catálogo común de variables (PDF «Catálogo común de variables», categorías A–G) más las variables extra que solo aparecen en los informes de Marte/Luna (in_catalog = false). Fuente de verdad del catálogo: generate-assessments-seed.mjs lo vuelca a la base.",
+  "categories": [
+    {
+      "id": "topography", "letter": "A", "name": "Topografía y geomorfología", "name_en": "Topography and Geomorphology",
+      "priority": "high", "priority_note": "Prioridad alta",
+      "why_it_matters": "Permite estudiar terrenos relacionados con el aterrizaje, la navegación, la movilidad de rovers y la planificación de operaciones.",
+      "caution": "No confundas elevación con pendiente: una zona puede estar a gran altura y ser prácticamente plana."
+    },
+    {
+      "id": "thermal", "letter": "B", "name": "Condiciones térmicas y ambientales", "name_en": "Thermal and Environmental Conditions",
+      "priority": "high", "priority_note": "Prioridad alta",
+      "why_it_matters": "Estas variables permiten estudiar condiciones ambientales que afectan equipos, materiales, operaciones y futuras instalaciones.",
+      "caution": "No deben comparar directamente la temperatura atmosférica de un lugar terrestre con la temperatura superficial de Marte o la Luna."
+    },
+    {
+      "id": "geology", "letter": "C", "name": "Geología y mineralogía", "name_en": "Geology and Mineralogy",
+      "priority": "high", "priority_note": "Prioridad alta",
+      "why_it_matters": "Permite identificar semejanzas geológicas, estudiar procesos planetarios y explorar posibles materiales de interés para futuras misiones.",
+      "caution": "Una semejanza de color o apariencia no demuestra una composición mineralógica semejante."
+    },
+    {
+      "id": "water", "letter": "D", "name": "Agua, hielo y recursos", "name_en": "Water, Ice and Resources",
+      "priority": "conditional", "priority_note": "Prioridad alta, según disponibilidad",
+      "why_it_matters": "Estas características pueden ayudar a estudiar recursos, ambientes extremos y condiciones relevantes para futuras bases.",
+      "caution": "Una medición de hidrógeno no equivale automáticamente a una confirmación de agua o hielo."
+    },
+    {
+      "id": "atmosphere", "letter": "E", "name": "Atmósfera, polvo y dinámica superficial", "name_en": "Atmosphere, Dust and Surface Dynamics",
+      "priority": "complementary", "priority_note": "Complementaria",
+      "why_it_matters": "Puede ayudar a estudiar condiciones que afectan equipos, visibilidad, desplazamiento y mantenimiento de instalaciones.",
+      "caution": "No es válido asumir que el viento terrestre reproduce el comportamiento del polvo marciano: la presión, densidad y composición atmosférica son diferentes."
+    },
+    {
+      "id": "subsurface", "letter": "F", "name": "Subsuelo y estructuras naturales", "name_en": "Subsurface and Natural Structures",
+      "priority": "complementary", "priority_note": "Complementaria",
+      "why_it_matters": "Puede servir para estudiar estructuras que tengan interés como ambientes protegidos, objetivos científicos o lugares para investigar tecnologías de exploración.",
+      "caution": null
+    },
+    {
+      "id": "biology", "letter": "G", "name": "Biología y habitabilidad", "name_en": "Biology and Habitability",
+      "priority": "specific", "priority_note": "Complementaria y específica",
+      "why_it_matters": "Especialmente para estudiar ambientes terrestres extremos que puedan servir como análogos de determinados procesos o condiciones de interés astrobiológico.",
+      "caution": "Esta categoría no debe confundirse con la búsqueda de vida en la Luna o Marte. Un análogo biológico terrestre no demuestra que exista vida extraterrestre."
+    }
+  ],
+  "variables": [
+    { "category": "topography", "key": "elevation", "name": "Elevación", "name_en": "Elevation", "description": "Altura de la superficie respecto a un nivel de referencia.", "in_catalog": true },
+    { "category": "topography", "key": "slope", "name": "Pendiente", "name_en": "Slope", "description": "Inclinación del terreno.", "in_catalog": true },
+    { "category": "topography", "key": "roughness", "name": "Rugosidad", "name_en": "Surface roughness", "description": "Irregularidad de la superficie.", "in_catalog": true },
+    { "category": "topography", "key": "relief", "name": "Relieve", "name_en": "Relief", "description": "Variaciones de altura y formas del terreno.", "in_catalog": true },
+    { "category": "topography", "key": "craters", "name": "Cráteres", "name_en": "Craters", "description": "Presencia, distribución, tamaño y características de cráteres.", "in_catalog": true },
+    { "category": "topography", "key": "obstacles", "name": "Obstáculos superficiales", "name_en": "Surface obstacles", "description": "Rocas, bloques, depresiones y otras irregularidades superficiales relevantes.", "in_catalog": true },
+
+    { "category": "thermal", "key": "surface_temperature", "name": "Temperatura superficial", "name_en": "Surface temperature", "description": "Temperatura de la superficie.", "in_catalog": true },
+    { "category": "thermal", "key": "temperature_extremes", "name": "Temperaturas máximas y mínimas", "name_en": "Maximum and minimum temperatures", "description": "Extremos térmicos observados o estimados.", "in_catalog": true },
+    { "category": "thermal", "key": "thermal_variation", "name": "Variación térmica", "name_en": "Thermal variation", "description": "Cambios de temperatura durante el día, noche o estaciones.", "in_catalog": true },
+    { "category": "thermal", "key": "solar_illumination", "name": "Iluminación solar", "name_en": "Solar illumination", "description": "Disponibilidad y duración de iluminación, cuando existan datos pertinentes.", "in_catalog": true },
+    { "category": "thermal", "key": "atmospheric_conditions", "name": "Condiciones atmosféricas", "name_en": "Atmospheric conditions", "description": "Presencia y características de la atmósfera, diferenciando las variables terrestres y planetarias.", "in_catalog": true },
+    { "category": "thermal", "key": "seasonality", "name": "Estacionalidad", "name_en": "Seasonality", "description": "Variación estacional de las condiciones superficiales. Solo aparece en los informes de Marte.", "bodies": ["mars"], "in_catalog": false },
+    { "category": "thermal", "key": "atmospheric_dryness", "name": "Sequedad atmosférica", "name_en": "Atmospheric dryness", "description": "Humedad y comportamiento del vapor de agua en la atmósfera. Solo aparece en los informes de Marte.", "bodies": ["mars"], "in_catalog": false },
+
+    { "category": "geology", "key": "rock_type", "name": "Tipo de roca", "name_en": "Rock type", "description": "Basalto, rocas sedimentarias, ígneas, etc.", "in_catalog": true },
+    { "category": "geology", "key": "mineral_composition", "name": "Composición mineralógica", "name_en": "Mineralogical composition", "description": "Minerales presentes y sus proporciones, si están disponibles.", "in_catalog": true },
+    { "category": "geology", "key": "chemical_composition", "name": "Composición química", "name_en": "Chemical composition", "description": "Elementos y compuestos identificados.", "in_catalog": true },
+    { "category": "geology", "key": "surface_material", "name": "Material superficial", "name_en": "Surface material", "description": "Características del regolito, suelo y fragmentos rocosos.", "in_catalog": true },
+    { "category": "geology", "key": "alteration", "name": "Alteración geológica", "name_en": "Geological alteration", "description": "Meteorización, erosión y cambios en los materiales.", "in_catalog": true },
+    { "category": "geology", "key": "formations", "name": "Formaciones geológicas", "name_en": "Geological formations", "description": "Estructuras y procesos que dieron origen al terreno.", "in_catalog": true },
+
+    { "category": "water", "key": "surface_water", "name": "Agua superficial", "name_en": "Surface water", "description": "Presencia de agua en superficie, cuando corresponda.", "in_catalog": true },
+    { "category": "water", "key": "surface_ice", "name": "Hielo superficial", "name_en": "Surface ice", "description": "Presencia y distribución de hielo.", "in_catalog": true },
+    { "category": "water", "key": "subsurface_ice", "name": "Hielo subterráneo", "name_en": "Subsurface ice", "description": "Evidencias o estimaciones de hielo bajo la superficie.", "in_catalog": true },
+    { "category": "water", "key": "permafrost", "name": "Permafrost", "name_en": "Permafrost", "description": "Suelos que permanecen congelados durante periodos prolongados.", "in_catalog": true },
+    { "category": "water", "key": "hydrogen", "name": "Hidrógeno", "name_en": "Hydrogen-bearing materials", "description": "Mediciones o indicadores relacionados con su presencia.", "in_catalog": true },
+    { "category": "water", "key": "mineral_resources", "name": "Recursos minerales", "name_en": "Mineral resources", "description": "Materiales que podrían tener interés científico o práctico.", "in_catalog": true },
+    { "category": "water", "key": "past_water", "name": "Evidencia de agua pasada", "name_en": "Evidence of past water", "description": "Minerales, formas del terreno y depósitos que indican agua líquida en el pasado. Solo aparece en los informes de Marte.", "bodies": ["mars"], "in_catalog": false },
+
+    { "category": "atmosphere", "key": "wind", "name": "Viento", "name_en": "Wind", "description": "Velocidad, dirección y comportamiento, si corresponde.", "in_catalog": true },
+    { "category": "atmosphere", "key": "dust", "name": "Polvo", "name_en": "Dust", "description": "Presencia, distribución y características de partículas.", "in_catalog": true },
+    { "category": "atmosphere", "key": "dust_storms", "name": "Tormentas de polvo", "name_en": "Dust storms", "description": "Frecuencia, extensión y condiciones asociadas.", "in_catalog": true },
+    { "category": "atmosphere", "key": "aeolian_erosion", "name": "Erosión eólica", "name_en": "Aeolian erosion", "description": "Cambios del terreno producidos por el viento.", "in_catalog": true },
+    { "category": "atmosphere", "key": "sediments", "name": "Sedimentos", "name_en": "Sediments", "description": "Distribución y características de los materiales transportados.", "in_catalog": true },
+    { "category": "atmosphere", "key": "aerosols", "name": "Aerosoles", "name_en": "Aerosols", "description": "Partículas suspendidas en la atmósfera, cuando existan datos.", "in_catalog": true },
+    { "category": "atmosphere", "key": "atmospheric_pressure", "name": "Presión atmosférica", "name_en": "Atmospheric pressure", "description": "Presión de la atmósfera en la superficie. Solo aparece en los informes de Marte.", "bodies": ["mars"], "in_catalog": false },
+    { "category": "atmosphere", "key": "atmospheric_composition", "name": "Composición atmosférica", "name_en": "Atmospheric composition", "description": "Gases que componen la atmósfera. Solo aparece en los informes de Marte.", "bodies": ["mars"], "in_catalog": false },
+
+    { "category": "subsurface", "key": "caves", "name": "Cuevas", "name_en": "Caves", "description": "Existencia y características de cavidades.", "in_catalog": true },
+    { "category": "subsurface", "key": "lava_tubes", "name": "Tubos de lava", "name_en": "Lava tubes", "description": "Estructuras subterráneas de origen volcánico.", "in_catalog": true },
+    { "category": "subsurface", "key": "fractures", "name": "Cavidades y fracturas", "name_en": "Cavities and fractures", "description": "Geometría y características conocidas.", "in_catalog": true },
+    { "category": "subsurface", "key": "subsurface_structure", "name": "Estructura del subsuelo", "name_en": "Subsurface structure", "description": "Capas, materiales y discontinuidades.", "in_catalog": true },
+    { "category": "subsurface", "key": "material_thickness", "name": "Espesor de materiales", "name_en": "Material thickness", "description": "Profundidad o espesor de capas, cuando se conozca.", "in_catalog": true },
+
+    { "category": "biology", "key": "extremophiles", "name": "Organismos extremófilos", "name_en": "Extremophile organisms", "description": "Organismos capaces de vivir en condiciones extremas.", "in_catalog": true },
+    { "category": "biology", "key": "habitability", "name": "Condiciones de habitabilidad", "name_en": "Habitability conditions", "description": "Temperatura, humedad, química y otras condiciones ambientales.", "in_catalog": true },
+    { "category": "biology", "key": "biosignatures", "name": "Biosignaturas", "name_en": "Biosignatures", "description": "Evidencias que podrían indicar actividad biológica.", "in_catalog": true },
+    { "category": "biology", "key": "adaptations", "name": "Adaptaciones biológicas", "name_en": "Biological adaptations", "description": "Respuestas de organismos a condiciones extremas.", "in_catalog": true },
+    { "category": "biology", "key": "direct_similarity", "name": "Similitud biológica directa", "name_en": "Direct biological similarity", "description": "Comparación biológica directa con el cuerpo objetivo. Solo aparece en algunos informes lunares, siempre como no aplicable.", "bodies": ["moon"], "in_catalog": false }
+  ]
+}

@@ -1,7 +1,6 @@
-import Explorer from "@/components/Explorer";
-import { getData } from "@/lib/data";
+import HomeExperience from "@/components/HomeExperience";
+import { SITES } from "@/lib/sites";
 
-export default async function Home() {
-  const { analogs, sites } = await getData();
-  return <Explorer analogs={analogs} sites={sites} />;
+export default function Home() {
+  return <HomeExperience sites={SITES} />;
 }

@@ -1,46 +1,90 @@
-export type AnalogTarget = "Luna" | "Marte";
+/** Planetary target of an assessment. */
+export type Planet = "moon" | "mars";
 
-export type Body = "moon" | "mars";
+/** The seven scientific comparison categories (fixed order). */
+export type CategoryId =
+  | "topography"
+  | "thermal"
+  | "geology"
+  | "water"
+  | "atmosphere"
+  | "subsurface"
+  | "biology";
 
-/** Variables comparables entre la Tierra, la Luna y Marte (todas normalizadas 0-1). */
-export type FeatureKey = "aridity" | "cold" | "radiation" | "roughness" | "basalt" | "ice";
-export type Profile = Record<FeatureKey, number>;
-export type Weights = Record<FeatureKey, number>;
+export type Classification =
+  | "Very High"
+  | "High"
+  | "Moderate"
+  | "Low"
+  | "Very Low"
+  | "Not Applicable";
 
-/** Sitio de referencia en la Luna o en Marte */
-export interface RefSite {
+/** A single comparable variable inside a category. `score: null` means N/A — never 0. */
+export interface SubVariable {
   id: string;
-  body: Body;
   name: string;
-  lat: number;
-  lng: number;
-  blurb: string;
-  /** Valores ilustrativos hasta integrar los datos globales de la NASA */
-  profile: Profile;
+  score: number | null;
+  explanation: string;
+  utility: string;
 }
 
-export interface Analog {
-  id: string;
+export interface Category {
+  id: CategoryId;
   name: string;
-  region: string;
-  target: AnalogTarget;
+  score: number | null;
+  classification: Classification;
+  description: string;
+  utility: string;
+  variables: SubVariable[];
+}
+
+export interface SourceGroup {
+  label: string;
+  items: string[];
+}
+
+/** A planetary similarity assessment: `TER-XX-MOON` or `TER-XX-MARS`. */
+export interface Assessment {
+  id: string;
+  planet: Planet;
+  overallScore: number;
+  classification: Classification;
+  /** General description of similarities shown on the similarity card. */
+  summary: string;
+  /** Main scientific applications. */
+  applications: string[];
+  /** Full scientific report sections (order preserved from the source documents). */
+  objective: string;
+  characterization: string[];
+  limitations: string[];
+  conclusion: string[];
+  sources: SourceGroup[];
+  methodology: string[];
+  categories: Category[];
+}
+
+export interface ExtraMarker {
+  name: string;
   lat: number;
   lng: number;
-  /** Tipo de terreno, ej. "Desierto hiperárido" */
-  type: string;
+}
+
+/** One of the eight terrestrial analog locations (TER-01 … TER-08). */
+export interface TerSite {
+  id: string;
+  slug: string;
+  name: string;
+  country: string;
+  regions?: string;
+  lat: number;
+  lng: number;
+  elevation: string;
+  environmentType: string;
+  features: string[];
   description: string;
-  metrics: {
-    uvIndex: number;
-    /** Precipitación anual en mm */
-    annualRainfallMm: number;
-    /** Temperatura media anual en °C */
-    meanTempC: number;
-    soil: string;
-  };
-  /** Rasgos no climáticos (0-1), ilustrativos hasta tener datos de terreno */
-  traits: { roughness: number; basalt: number; ice: number };
-  /** Origen de `metrics` climáticas; ausente en el JSON estático */
-  dataSource?: "nasa-power" | "mock";
-  /** Gradiente CSS usado como placeholder hasta tener imágenes reales */
-  palette: [string, string, string];
+  relevance: string;
+  geoNote: string;
+  extraMarkers?: ExtraMarker[];
+  moon: Assessment;
+  mars: Assessment;
 }

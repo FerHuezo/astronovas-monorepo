@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { Nav } from "@/components/ui";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -13,17 +14,21 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "TerraAnalog · Project Exodus",
-  description: "Análogos planetarios en la Tierra para la Luna y Marte, con datos de la NASA.",
+  title: "AstroNovas · TerraAnalog — Earth Analogs for the Moon and Mars",
+  description:
+    "Explore eight terrestrial analog environments, compare them with the Moon and Mars, and find the best sites for your planetary research objective. NASA Space Apps Challenge 2026.",
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html
-      lang="es"
+      lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="flex min-h-full flex-col">
+        <Nav />
+        {children}
+      </body>
     </html>
   );
 }

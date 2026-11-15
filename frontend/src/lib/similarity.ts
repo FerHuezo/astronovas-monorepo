@@ -1,12 +1,76 @@
 import type { Analog, Body, FeatureKey, Profile, RefSite, Weights } from "./types";
 
-export const FEATURES: { key: FeatureKey; label: string; source: string }[] = [
-  { key: "aridity", label: "Aridez", source: "NASA POWER (lluvia)" },
-  { key: "cold", label: "Frío", source: "NASA POWER (temperatura)" },
-  { key: "radiation", label: "Radiación UV", source: "NASA POWER (UV)" },
-  { key: "roughness", label: "Rugosidad", source: "Ilustrativo" },
-  { key: "basalt", label: "Roca basáltica", source: "Ilustrativo" },
-  { key: "ice", label: "Hielo / permafrost", source: "Ilustrativo" },
+/** Catálogo de variables comparables. Agregar una variable nueva empieza aquí (y en `FeatureKey`). */
+export interface FeatureDef {
+  key: FeatureKey;
+  label: string;
+  /** Origen del dato: `live` = viene de NASA POWER; el resto es ilustrativo hasta migrar los datos nuevos */
+  source: string;
+  live: boolean;
+  /** Etiquetas de los extremos 0 y 1 del control */
+  low: string;
+  high: string;
+  /** Traduce el valor normalizado (0-1) a una magnitud legible */
+  format: (v: number) => string;
+}
+
+const level = (v: number) => (v < 0.34 ? "baja" : v < 0.67 ? "media" : "alta");
+
+export const FEATURES: FeatureDef[] = [
+  {
+    key: "aridity",
+    label: "Aridez",
+    source: "NASA POWER · lluvia",
+    live: true,
+    low: "Húmedo",
+    high: "Hiperárido",
+    format: (v) => `≈ ${Math.round((1 - v) * 900)} mm/año`,
+  },
+  {
+    key: "cold",
+    label: "Frío",
+    source: "NASA POWER · temperatura",
+    live: true,
+    low: "Cálido",
+    high: "Glacial",
+    format: (v) => `≈ ${Math.round(20 - v * 45)} °C`,
+  },
+  {
+    key: "radiation",
+    label: "Radiación UV",
+    source: "NASA POWER · UV",
+    live: true,
+    low: "Baja",
+    high: "Intensa",
+    format: (v) => `UV ≈ ${(v * 3).toFixed(1)}`,
+  },
+  {
+    key: "roughness",
+    label: "Rugosidad",
+    source: "Ilustrativo",
+    live: false,
+    low: "Llano",
+    high: "Escarpado",
+    format: (v) => `Rugosidad ${level(v)}`,
+  },
+  {
+    key: "basalt",
+    label: "Roca basáltica",
+    source: "Ilustrativo",
+    live: false,
+    low: "Poca",
+    high: "Dominante",
+    format: (v) => `${Math.round(v * 100)} % basalto`,
+  },
+  {
+    key: "ice",
+    label: "Hielo / permafrost",
+    source: "Ilustrativo",
+    live: false,
+    low: "Sin hielo",
+    high: "Permafrost",
+    format: (v) => `Hielo ${level(v)}`,
+  },
 ];
 
 export const DEFAULT_WEIGHTS: Weights = {
