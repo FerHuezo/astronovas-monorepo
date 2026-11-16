@@ -11,6 +11,8 @@ interface Props {
   color?: string;
   /** When false, wheel/pinch does not zoom — the page scrolls normally. */
   zoom?: boolean;
+  /** Sitios que cumplen el filtro activo; los demás se atenúan. null = todos visibles. */
+  visibleIds?: Set<string> | null;
 }
 
 const INITIAL_POV = { lat: 15, lng: -20, altitude: 2.3 };
@@ -18,7 +20,7 @@ const INITIAL_POV = { lat: 15, lng: -20, altitude: 2.3 };
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type GlobeInstance = any;
 
-export default function Globe({ sites, activeId, onSelect, color = "#38bdf8", zoom = true }: Props) {
+export default function Globe({ sites, activeId, onSelect, color = "#38bdf8", zoom = true, visibleIds = null }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const globeRef = useRef<GlobeInstance>(null);
   const onSelectRef = useRef(onSelect);
@@ -135,6 +137,15 @@ export default function Globe({ sites, activeId, onSelect, color = "#38bdf8", zo
     globe.pointOfView({ lat: site.lat, lng: site.lng, altitude: 1.7 }, 1200);
     highlightMarker(activeId);
   }, [activeId, sites]);
+
+  // Filtro activo: solo los sitios que cumplen siguen resaltados (y con anillo pulsante).
+  useEffect(() => {
+    const globe = globeRef.current;
+    document.querySelectorAll<HTMLElement>(".analog-marker-wrap").forEach((m) => {
+      m.classList.toggle("is-dim", !!visibleIds && !visibleIds.has(m.dataset.id ?? ""));
+    });
+    globe?.ringsData(visibleIds ? sites.filter((x) => visibleIds.has(x.id)) : sites);
+  }, [visibleIds, sites]);
 
   return (
     <div className="relative h-full w-full overflow-hidden">

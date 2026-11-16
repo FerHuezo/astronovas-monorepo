@@ -63,6 +63,17 @@ body {
   transform: translate(-50%, -50%) scale(1.6);
 }
 
+/* Marcadores fuera del filtro activo: se atenúan y no se pueden pulsar */
+.analog-marker-wrap.is-dim .analog-marker {
+  opacity: 0.18;
+  box-shadow: none;
+  pointer-events: none;
+  filter: grayscale(1);
+}
+.analog-marker-wrap.is-dim .analog-marker-label {
+  display: none;
+}
+
 /* Thin scrollbars for panels */
 .nice-scroll::-webkit-scrollbar {
   width: 8px;

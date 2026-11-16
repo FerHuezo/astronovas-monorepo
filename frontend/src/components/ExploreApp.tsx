@@ -43,27 +43,28 @@ export default function ExploreApp({ sites, initialSite, initialPlanet = "moon" 
             s.country.toLowerCase().includes(q) ||
             s.id.toLowerCase().includes(q),
         );
-    // With a category filter active, rank sites by that category's score.
-    if (categoryId) {
-      base.sort((a, b) => {
-        const sa = getAssessment(a, planet).categories.find((c) => c.id === categoryId)?.score;
-        const sb = getAssessment(b, planet).categories.find((c) => c.id === categoryId)?.score;
-        return (sb ?? -1) - (sa ?? -1);
-      });
-    }
-    return base;
+    if (!categoryId) return base;
+    // With a category filter active, keep only the sites that have data for it, strongest first.
+    const scoreOf = (s: TerSite) =>
+      getAssessment(s, planet).categories.find((c) => c.id === categoryId)?.score ?? null;
+    return base
+      .filter((s) => scoreOf(s) !== null)
+      .sort((a, b) => (scoreOf(b) ?? 0) - (scoreOf(a) ?? 0));
   }, [sites, query, categoryId, planet]);
 
-  const selectSite = (id: string | null) => {
-    setActiveId(id);
-    setCategoryId(null);
-  };
+  const isFiltering = categoryId !== null || query.trim() !== "";
+  const visibleIds = useMemo(
+    () => (isFiltering ? new Set(filtered.map((s) => s.id)) : null),
+    [filtered, isFiltering],
+  );
+
+  const selectSite = (id: string | null) => setActiveId(id);
 
   return (
     <div className="flex flex-col md:h-screen md:flex-row">
       {/* Globe */}
       <div className="relative h-[46vh] shrink-0 md:h-auto md:flex-1">
-        <Globe sites={sites} activeId={activeId} onSelect={selectSite} color={planetColor} />
+        <Globe sites={sites} activeId={activeId} onSelect={selectSite} color={planetColor} visibleIds={visibleIds} />
         <div className="pointer-events-none absolute left-4 top-16 md:top-20">
           <p className="font-mono text-[11px] uppercase tracking-widest" style={{ color: planetColor }}>
             Explore Sites · {planet === "moon" ? "Moon" : "Mars"}
@@ -122,11 +123,12 @@ export default function ExploreApp({ sites, initialSite, initialPlanet = "moon" 
               </p>
               {activeCategory && (
                 <p className="mt-2 text-xs" style={{ color: planetColor }}>
-                  Ranked by {activeCategory.name} score — strongest first.
+                  {filtered.length} of {sites.length} sites have {activeCategory.name} data for the{" "}
+                  {planet === "moon" ? "Moon" : "Mars"} — ranked strongest first. Sites without data are hidden.
                 </p>
               )}
               <div className="mt-4 grid gap-2">
-                {filtered.map((s) => {
+                {filtered.map((s, i) => {
                   const a = getAssessment(s, planet);
                   const cat = activeCategory
                     ? (a.categories.find((c) => c.id === activeCategory.id) ?? null)
@@ -138,7 +140,10 @@ export default function ExploreApp({ sites, initialSite, initialPlanet = "moon" 
                       className="group flex items-center justify-between gap-3 rounded-xl border border-white/10 bg-white/[0.04] px-4 py-3 text-left transition-colors hover:border-white/30 hover:bg-white/[0.07]"
                     >
                       <span className="min-w-0">
-                        <span className="block truncate font-medium">{s.name}</span>
+                        <span className="block truncate font-medium">
+                          {activeCategory && <span className="mr-2 font-mono text-xs text-white/35">#{i + 1}</span>}
+                          {s.name}
+                        </span>
                         <span className="block text-xs text-white/50">
                           {s.id} · {s.country}
                         </span>
@@ -158,7 +163,11 @@ export default function ExploreApp({ sites, initialSite, initialPlanet = "moon" 
                   );
                 })}
                 {filtered.length === 0 && (
-                  <p className="py-6 text-center text-sm text-white/40">No location matches “{query}”.</p>
+                  <p className="py-6 text-center text-sm text-white/40">
+                    {activeCategory
+                      ? `No site has ${activeCategory.name} data for the ${planet === "moon" ? "Moon" : "Mars"}${query ? ` matching “${query}”` : ""}. Try the other planet or another category.`
+                      : `No location matches “${query}”.`}
+                  </p>
                 )}
               </div>
             </>
@@ -166,15 +175,25 @@ export default function ExploreApp({ sites, initialSite, initialPlanet = "moon" 
 
           {site && assessment && (
             <div className="space-y-5">
-              <GeographicCard site={site} color={planetColor} />
-              <SimilarityCard site={site} planet={planet} />
-
-              {categoryId && (
-                <CategoryPanel
-                  category={assessment.categories.find((c) => c.id === categoryId) ?? null}
-                  site={site}
-                  planet={planet}
-                />
+              {categoryId ? (
+                <>
+                  <div>
+                    <p className="font-mono text-[11px] uppercase tracking-widest" style={{ color: planetColor }}>
+                      {site.id} · {site.country}
+                    </p>
+                    <h2 className="mt-0.5 text-2xl font-bold">{site.name}</h2>
+                  </div>
+                  <CategoryPanel
+                    category={assessment.categories.find((c) => c.id === categoryId) ?? null}
+                    site={site}
+                    planet={planet}
+                  />
+                </>
+              ) : (
+                <>
+                  <GeographicCard site={site} color={planetColor} />
+                  <SimilarityCard site={site} planet={planet} />
+                </>
               )}
 
               <Link
@@ -328,14 +347,8 @@ function CategoryPanel({
         </div>
       </div>
 
-      <p className="mt-3 text-sm leading-relaxed text-white/80">{category.description}</p>
-      <p className="mt-2 text-sm text-white/55">
-        <span className="font-medium text-white/70">Scientific utility: </span>
-        {category.utility}
-      </p>
-
       <div className="mt-5 space-y-4 border-t border-white/10 pt-4">
-        {category.variables.map((v) => (
+        {category.variables.filter((v) => v.score !== null).map((v) => (
           <div key={v.id}>
             <div className="mb-1 flex items-baseline justify-between gap-3">
               <p className="text-sm font-medium text-white/90">{v.name}</p>
@@ -344,14 +357,15 @@ function CategoryPanel({
               </p>
             </div>
             <ScoreBar score={v.score} color={color} />
-            <p className="mt-1.5 text-[13px] leading-relaxed text-white/65">{v.explanation}</p>
-            <p className="mt-1 text-xs text-white/45">
-              <span className="font-medium text-white/55">Utility: </span>
-              {v.utility}
-            </p>
           </div>
         ))}
       </div>
+      {category.variables.some((v) => v.score === null) && (
+        <p className="mt-4 text-[11px] text-white/40">
+          Not applicable here (excluded):{" "}
+          {category.variables.filter((v) => v.score === null).map((v) => v.name).join(", ")}.
+        </p>
+      )}
       <Link
         href={`/report/${reportId(getAssessment(site, planet))}`}
         className="mt-4 inline-block text-xs hover:underline"
