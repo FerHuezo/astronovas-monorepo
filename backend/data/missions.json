@@ -1,0 +1,44 @@
+{
+  "_comment": "Tipos de misión del Explorador de misión. Cada misión pondera variables del catálogo (id = categoría.clave). Los pesos son una propuesta del equipo de desarrollo y se pueden ajustar sin tocar el esquema. Una misión solo puntúa los cuerpos listados en `bodies`.",
+  "missions": [
+    {
+      "id": "ice", "label": "Agua y hielo (ISRU)", "glyph": "❄", "bodies": ["moon", "mars"],
+      "short": "Extraer agua del hielo para beber, respirar y fabricar combustible.",
+      "description": "Premia sitios con hielo superficial y subterráneo y permafrost, donde ensayar perforación, derretido y purificación.",
+      "variables": { "water.surface_ice": 2, "water.subsurface_ice": 3, "water.permafrost": 2, "water.hydrogen": 1 }
+    },
+    {
+      "id": "landing", "label": "Aterrizaje seguro", "glyph": "⌖", "bodies": ["moon", "mars"],
+      "short": "Zonas llanas y despejadas donde posar un módulo de descenso.",
+      "description": "Prioriza pendiente, rugosidad y obstáculos: es lo que decide si un módulo puede posarse con seguridad.",
+      "variables": { "topography.slope": 3, "topography.roughness": 3, "topography.obstacles": 2, "topography.craters": 1, "topography.relief": 1 }
+    },
+    {
+      "id": "habitat", "label": "Hábitat y refugio", "glyph": "⌂", "bodies": ["moon", "mars"],
+      "short": "Tubos de lava y cuevas que protejan a la tripulación de la radiación.",
+      "description": "Busca tubos de lava, cuevas y fracturas sobre roca estable, los refugios naturales contra la radiación.",
+      "variables": { "subsurface.lava_tubes": 3, "subsurface.caves": 2, "subsurface.fractures": 1, "subsurface.subsurface_structure": 1, "geology.rock_type": 1 }
+    },
+    {
+      "id": "rover", "label": "Movilidad de rovers", "glyph": "◈", "bodies": ["moon", "mars"],
+      "short": "Terreno áspero para probar ruedas, suspensión y navegación autónoma.",
+      "description": "Combina pendiente, rugosidad y obstáculos con el tipo de roca y el material superficial que enfrentará un rover.",
+      "variables": { "topography.roughness": 2, "topography.slope": 2, "topography.obstacles": 2, "geology.surface_material": 1, "geology.rock_type": 1, "atmosphere.dust": 1 }
+    },
+    {
+      "id": "solar", "label": "Energía solar", "glyph": "☀", "bodies": ["moon", "mars"],
+      "short": "Sitios con cielos despejados y mucha irradiancia para paneles.",
+      "description": "Premia la iluminación solar y penaliza el polvo; la variación térmica indica el estrés sobre los paneles.",
+      "variables": { "thermal.solar_illumination": 3, "atmosphere.dust": 1, "thermal.thermal_variation": 1, "thermal.surface_temperature": 1 }
+    },
+    {
+      "id": "astrobio", "label": "Búsqueda de vida", "glyph": "✦", "bodies": ["mars"],
+      "short": "Ambientes extremos donde la vida resiste y deja huellas.",
+      "description": "Marte conserva ambientes que pudieron ser habitables. Premia extremófilos, habitabilidad, biosignaturas y evidencia de agua pasada.",
+      "variables": {
+        "biology.extremophiles": 2, "biology.habitability": 2, "biology.biosignatures": 2, "water.past_water": 2,
+        "water.surface_water": 1, "geology.mineral_composition": 1, "geology.alteration": 1
+      }
+    }
+  ]
+}

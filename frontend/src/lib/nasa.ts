@@ -1,27 +1,38 @@
 import { cacheLife } from "next/cache";
-import analogsMock from "@/data/analogs.json";
-import type { Analog } from "./types";
+import type { TerSite } from "./types";
+import { SITES } from "./sites";
 
 const POWER_URL = "https://power.larc.nasa.gov/api/temporal/climatology/point";
 
-interface PowerClimatology {
+export interface PowerClimatology {
+  /** Air temperature at 2 m, annual mean (°C). */
+  t2m: number;
+  /** Wind speed at 10 m, annual mean (m/s). */
+  ws10m: number;
+  /** All-sky surface UV index, annual mean. */
   uvIndex: number;
-  annualRainfallMm: number;
-  meanTempC: number;
+  /** Corrected precipitation, annualized from mm/day (mm/year). */
+  precipitationMm: number;
+  period: string;
+}
+
+export interface SiteClimate {
+  siteId: string;
+  data: PowerClimatology | null;
 }
 
 /**
- * Climatología anual (2001-2025) de NASA POWER para un punto. No requiere API key.
- * No lanza (Next trata como fatal un error dentro de `use cache`): devuelve null si falla, y ese
- * fallo se reintenta a los 30 s; un acierto se cachea un día.
+ * Annual climatology (NASA POWER, no API key) for the representative coordinates of one site.
+ * Never throws inside `use cache`: a failure returns null and is retried in ~30 s; a success
+ * is cached for a day. These are point climatologies — not measurements of a whole region.
  */
-async function fetchClimatology(lat: number, lng: number): Promise<PowerClimatology | null> {
+export async function fetchClimatology(lat: number, lng: number): Promise<PowerClimatology | null> {
   "use cache";
 
   try {
     const url = new URL(POWER_URL);
     url.search = new URLSearchParams({
-      parameters: "T2M,PRECTOTCORR,ALLSKY_SFC_UV_INDEX",
+      parameters: "T2M,PRECTOTCORR,WS10M,ALLSKY_SFC_UV_INDEX",
       community: "RE",
       latitude: String(lat),
       longitude: String(lng),
@@ -34,35 +45,29 @@ async function fetchClimatology(lat: number, lng: number): Promise<PowerClimatol
 
     const ann = (key: string): number => {
       const v = parameter[key]?.ANN;
-      if (typeof v !== "number" || v === -999) throw new Error(`NASA POWER sin dato para ${key}`);
+      if (typeof v !== "number" || v === -999) throw new Error(`NASA POWER missing ${key}`);
       return v;
     };
 
-    const result = {
+    const result: PowerClimatology = {
+      t2m: Math.round(ann("T2M") * 10) / 10,
+      ws10m: Math.round(ann("WS10M") * 10) / 10,
       uvIndex: ann("ALLSKY_SFC_UV_INDEX"),
-      // POWER entrega mm/día: se anualiza.
-      annualRainfallMm: Math.round(ann("PRECTOTCORR") * 365 * 10) / 10,
-      meanTempC: Math.round(ann("T2M") * 10) / 10,
+      precipitationMm: Math.round(ann("PRECTOTCORR") * 365 * 10) / 10,
+      period: "2001–2025 climatology",
     };
     cacheLife("days");
     return result;
   } catch {
-    cacheLife({ stale: 300, revalidate: 30, expire: 600 }); // fallo: se reintenta pronto sin volverse dinámica
+    cacheLife({ stale: 300, revalidate: 30, expire: 600 });
     return null;
   }
 }
 
-/** Análogos con métricas climáticas reales de NASA POWER (mock como respaldo). */
-export async function getAnalogs(): Promise<Analog[]> {
-  const base = analogsMock as unknown as Analog[];
-  return Promise.all(
-    base.map(async (a) => {
-      const live = await fetchClimatology(a.lat, a.lng);
-      if (!live) {
-        console.error(`[nasa] ${a.id}: NASA POWER no disponible, usando datos mock`);
-        return { ...a, dataSource: "mock" as const };
-      }
-      return { ...a, metrics: { ...a.metrics, ...live }, dataSource: "nasa-power" as const };
-    }),
+/** Loads climatologies for all eight sites (each cached independently). */
+export async function getAllClimatologies(): Promise<Record<string, PowerClimatology | null>> {
+  const entries = await Promise.all(
+    SITES.map(async (s: TerSite) => [s.id, await fetchClimatology(s.lat, s.lng)] as const),
   );
+  return Object.fromEntries(entries);
 }

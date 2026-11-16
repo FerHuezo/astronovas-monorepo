@@ -19,11 +19,18 @@ body {
   font-family: var(--font-sans), Arial, Helvetica, sans-serif;
 }
 
-/* Marcadores HTML sobre el globo */
+/* HTML markers over the globe */
+.analog-marker-wrap {
+  position: relative;
+  pointer-events: none;
+}
 .analog-marker {
-  --c: #fb923c;
-  width: 16px;
-  height: 16px;
+  --c: #38bdf8;
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 15px;
+  height: 15px;
   border-radius: 9999px;
   border: 2px solid #fff;
   background: var(--c);
@@ -33,44 +40,35 @@ body {
   transition: transform 0.2s;
   pointer-events: auto;
 }
-.analog-marker:hover,
-.analog-marker.is-active {
+.analog-marker-label {
+  position: absolute;
+  left: 10px;
+  top: 4px;
+  white-space: nowrap;
+  font-size: 11px;
+  font-weight: 600;
+  color: #e2e8f0;
+  text-shadow: 0 1px 4px #000, 0 0 8px rgba(0, 0, 0, 0.8);
+  opacity: 0;
+  transform: translateY(-50%);
+  transition: opacity 0.2s;
+  pointer-events: none;
+}
+.analog-marker-wrap:hover .analog-marker-label,
+.analog-marker-wrap.is-active .analog-marker-label {
+  opacity: 1;
+}
+.analog-marker-wrap:hover .analog-marker,
+.analog-marker-wrap.is-active .analog-marker {
   transform: translate(-50%, -50%) scale(1.6);
 }
 
-/* Marcadores de sitios de referencia (Luna y Marte) */
-.site-marker {
-  --c: #93c5fd;
-  width: 11px;
-  height: 11px;
-  border-radius: 9999px;
-  border: 1.5px solid #fff;
-  background: var(--c);
-  box-shadow: 0 0 8px var(--c);
-  cursor: pointer;
-  transform: translate(-50%, -50%);
-  transition: transform 0.2s;
-  pointer-events: auto;
+/* Thin scrollbars for panels */
+.nice-scroll::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
 }
-/* Área de clic ampliada sin cambiar el tamaño visible */
-.site-marker::after {
-  content: "";
-  position: absolute;
-  inset: -7px;
-}
-.site-marker:hover,
-.site-marker.is-active {
-  transform: translate(-50%, -50%) scale(1.7);
-}
-
-/* Curvas de conexión entre la Tierra y los otros mundos */
-.link-path {
-  stroke-dasharray: 6 6;
-  animation: link-dash 1s linear infinite;
-  filter: drop-shadow(0 0 3px currentColor);
-}
-@keyframes link-dash {
-  to {
-    stroke-dashoffset: -24;
-  }
+.nice-scroll::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
 }

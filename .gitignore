@@ -45,3 +45,4 @@ next-env.d.ts
 backend/supabase/.branches/
 backend/supabase/.temp/
 backend/supabase/bundle.sql
+backend/supabase/bundle.update.sql

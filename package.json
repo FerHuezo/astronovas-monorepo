@@ -11,7 +11,10 @@
     "start": "npm run start -w frontend",
     "lint": "npm run lint -w frontend",
     "db:seed": "npm run db:seed -w backend",
+    "db:seed:assessments": "npm run db:seed:assessments -w backend",
+    "db:extract": "npm run db:extract -w backend",
     "test:db": "npm run test:db -w backend",
-    "db:bundle": "npm run db:bundle -w backend"
+    "db:bundle": "npm run db:bundle -w backend",
+    "db:bundle:update": "npm run db:bundle:update -w backend"
   }
 }
